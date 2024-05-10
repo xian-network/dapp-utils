@@ -11,7 +11,7 @@ The `XianWalletUtils` JavaScript utility provides a simple interface for interac
 To use `XianWalletUtils`, simply include the JavaScript file in your project.
 
 ```html
-<script src="path/to/xian-wallet-utils.js"></script>
+<script src="path/to/dapp.js"></script>
 ```
 
 ## Initialization
