@@ -1,6 +1,6 @@
 # XianWalletUtils
 
-The `XianWalletUtils` JavaScript utility provides a simple interface for interacting with wallet information and sending transactions via custom events in a web environment.
+The `XianWalletUtils` JavaScript utility provides a simple interface for interacting with Xian wallet information and requesting transactions via custom events in a web environment.
 
 ## Overview
 
