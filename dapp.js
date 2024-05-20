@@ -20,7 +20,21 @@ const XianWalletUtils = {
     requestWalletInfo: function() {
         return new Promise((resolve, reject) => {
             this.walletInfoResolver = resolve; // Store the resolver to use in the event listener
+
+            // Set a timeout to reject the promise if it does not resolve within a certain timeframe
+            const timeoutId = setTimeout(() => {
+                this.walletInfoResolver = null; // Clear the resolver
+                reject(new Error('Xian Wallet Chrome extension not installed or not responding'));
+            }, 5000); // 5 seconds timeout
+
+            // Dispatch the event to request wallet info
             document.dispatchEvent(new CustomEvent('xianWalletGetInfo'));
+         
+            // Wrap the original resolve to clear the timeout when resolved
+            this.walletInfoResolver = (info) => {
+                clearTimeout(timeoutId);
+                resolve(info);
+            };
         });
     },
 
