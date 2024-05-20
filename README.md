@@ -29,11 +29,15 @@ XianWalletUtils.init();
 To request wallet information, you can use the `requestWalletInfo` function. This function returns a promise that resolves with the wallet details.
 
 ```javascript
-XianWalletUtils.requestWalletInfo().then(info => {
-    console.log('Wallet Address:', info.address);
-    console.log('Is Locked:', info.locked);
-    console.log('Chain ID:', info.chainId);
-});
+XianWalletUtils.requestWalletInfo()
+    .then(info => {
+        console.log('Wallet Address:', info.address);
+        console.log('Is Locked:', info.locked);
+        console.log('Chain ID:', info.chainId);
+    })
+    .catch(error => {
+        console.error('Extension not installed');
+    });
 ```
 
 ### Sending Transactions
