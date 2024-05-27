@@ -51,8 +51,7 @@ XianWalletUtils.sendTransaction(
     {                      // kwargs (method arguments)
         "to": "wallet_address",
         "amount": 1000
-    },
-    30                     // stamp limit
+    }
 ).then(status => {
     if (status.errors) {
         console.error('Transaction Errors:', status.errors);
