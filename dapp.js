@@ -46,8 +46,7 @@ const XianWalletUtils = {
                 detail: {
                     contract: contract,
                     method: method,
-                    kwargs: kwargs,
-                    stampLimit: stampLimit
+                    kwargs: kwargs
                 }
             }));
         });
