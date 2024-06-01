@@ -52,11 +52,11 @@ XianWalletUtils.sendTransaction(
         "to": "wallet_address",
         "amount": 1000
     }
-).then(status => {
-    if (status.errors) {
-        console.error('Transaction Errors:', status.errors);
+).then(result => {
+    if (result.errors) {
+        console.error('Transaction Errors:', result.errors);
     } else {
-        console.log('Transaction ID:', status.txid);
+        console.log('Transaction Result:', result);
     }
 });
 ```
