@@ -52,7 +52,7 @@ const XianWalletUtils = {
     },
 
     // Send a transaction with detailed parameters and return a promise that resolves with the transaction status
-    sendTransaction: function(contract, method, kwargs, stampLimit = 30) {
+    sendTransaction: function(contract, method, kwargs) {
         return new Promise((resolve, reject) => {
             this.transactionResolver = resolve; // Store the resolver to use in the event listener
             document.dispatchEvent(new CustomEvent('xianWalletSendTx', {
