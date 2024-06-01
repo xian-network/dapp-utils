@@ -10,8 +10,21 @@ const XianWalletUtils = {
 
         document.addEventListener('xianWalletTxStatus', event => {
             if (this.transactionResolver) {
-                this.transactionResolver(event.detail);
-                this.transactionResolver = null; // Reset the resolver after use
+                if ('errors' in event.detail) {
+                    this.transactionResolver(event.detail);
+                    this.transactionResolver = null; // Reset the resolver after use
+                    return;
+                }
+                this.getTxResultsAsyncBackoff(event.detail.txid).then(tx => {
+                    let data = tx.result.tx_result.data;
+                    let decodedData = window.atob(data);
+                    let parsedData = JSON.parse(decodedData);
+                    this.transactionResolver(parsedData);
+                    this.transactionResolver = null; // Reset the resolver after use
+                }).catch(error => {
+                    console.error('Final error after retries:', error);
+                    this.transactionResolver(null);
+                });
             }
         });
     },
@@ -50,5 +63,32 @@ const XianWalletUtils = {
                 }
             }));
         });
+    },
+
+    getTxResults: async function(txHash) {
+        try {
+            const response = await fetch(`https://testnet.xian.org/tx?hash=0x${txHash}`);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            return data;
+        } catch (error) {
+            console.log('Transaction not found yet');
+            throw error; // Rethrow the error to trigger retries
+        }
+    },
+
+    getTxResultsAsyncBackoff: async function(txHash, retries = 5, delay = 1000) {
+        try {
+            return await this.getTxResults(txHash);
+        } catch (error) {
+            if (retries === 0) {
+                throw error;
+            }
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return await this.getTxResultsAsyncBackoff(txHash, retries - 1, delay * 2);
+        }
     }
 };
+
