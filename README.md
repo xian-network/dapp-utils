@@ -42,7 +42,7 @@ XianWalletUtils.requestWalletInfo()
 
 ### Sending Transactions
 
-To send a transaction with detailed control over the transaction parameters, use the `sendTransaction` function. This function requires specifying the contract name, method name, kwargs. It returns a promise that resolves with the transaction hash.
+To send a transaction with detailed control over the transaction parameters, use the `sendTransaction` function. This function requires specifying the contract name, method name, kwargs. It returns a promise that resolves with the transaction details.
 
 ```javascript
 XianWalletUtils.sendTransaction(
