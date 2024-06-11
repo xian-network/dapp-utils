@@ -79,8 +79,8 @@ const XianWalletUtils = {
         }
     },
 
-    getBalanceRequest: async function(address) {
-        const response = await fetch(`https://testnet.xian.org/abci_query?path=%22/get/currency.balances:${address}%22`);
+    getBalanceRequest: async function(address, contract) {
+        const response = await fetch(`https://testnet.xian.org/abci_query?path=%22/get/${contract}.balances:${address}%22`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -93,10 +93,10 @@ const XianWalletUtils = {
         return decodedBalance;
     },
 
-    getBalance: async function() {
+    getBalance: async function(contract) {
         const info = await this.requestWalletInfo();
         const address = info.address;
-        const balance = await this.getBalanceRequest(address);
+        const balance = await this.getBalanceRequest(address, contract);
         return balance;
     },
 
