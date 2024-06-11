@@ -40,7 +40,7 @@ XianWalletUtils.requestWalletInfo()
     });
 ```
 
-To get the Xian balance of the wallet, you can use `getBalance` function with the contract of the token that you want to get the balance of. This function returns a promise that resolves with the wallet balance.
+To get the balance of the wallet, you can use `getBalance` function with the contract of the token that you want to get the balance of. This function returns a promise that resolves with the wallet balance.
 
 ```javascript
 XianWalletUtils.getBalance("currency")
