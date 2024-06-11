@@ -65,6 +65,27 @@ export const XianWalletUtils = {
         });
     },
 
+    getBalanceRequest: async function(address) {
+        const response = await fetch(`https://testnet.xian.org/abci_query?path=%22/get/currency.balances:${address}%22`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        let balance = data.result.response.value;
+        if (balance === 'AA==') {
+            return 0;
+        }
+        let decodedBalance = window.atob(balance);
+        return decodedBalance;
+    },
+
+    getBalance: async function() {
+        const info = await this.requestWalletInfo();
+        const address = info.address;
+        const balance = await this.getBalanceRequest(address);
+        return balance;
+    },
+
     async getTxResults(txHash) {
         try {
             const response = await fetch(`https://testnet.xian.org/tx?hash=0x${txHash}`);
