@@ -40,6 +40,18 @@ XianWalletUtils.requestWalletInfo()
     });
 ```
 
+To get the Xian balance of the wallet, you can use `getBalance` function. This function returns a promise that resolves with the wallet balance.
+
+```javascript
+XianWalletUtils.getBalance()
+    .then(balance => {
+        console.log('Balance:', balance);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+```
+
 ### Sending Transactions
 
 To send a transaction with detailed control over the transaction parameters, use the `sendTransaction` function. This function requires specifying the contract name, method name, kwargs. It returns a promise that resolves with the transaction result.
