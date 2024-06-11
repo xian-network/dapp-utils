@@ -22,6 +22,12 @@ Before using `XianWalletUtils`, it's important to initialize the utility to set 
 XianWalletUtils.init();
 ```
 
+Or if you want to use another Node to get balance infos etc.
+
+```javascript
+XianWalletUtils.init("https://testnet.xian.org");
+```
+
 ## Usage
 
 ### Requesting Wallet Information
