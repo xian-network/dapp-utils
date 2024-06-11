@@ -1,6 +1,12 @@
 export const XianWalletUtils = {
-    // Initialize listeners to resolve promises
-    init() {
+    rpcUrl: 'https://testnet.xian.org', // Default RPC URL
+
+    // Initialize listeners to resolve promises and set RPC URL
+    init(rpcUrl) {
+        if (rpcUrl) {
+            this.rpcUrl = rpcUrl;
+        }
+
         document.addEventListener('xianWalletInfo', event => {
             if (this.walletInfoResolver) {
                 this.walletInfoResolver(event.detail);
@@ -65,8 +71,8 @@ export const XianWalletUtils = {
         });
     },
 
-    getBalanceRequest: async function(address, contract) {
-        const response = await fetch(`https://testnet.xian.org/abci_query?path=%22/get/${contract}.balances:${address}%22`);
+    async getBalanceRequest(address, contract) {
+        const response = await fetch(`${this.rpcUrl}/abci_query?path=%22/get/${contract}.balances:${address}%22`);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -79,7 +85,7 @@ export const XianWalletUtils = {
         return decodedBalance;
     },
 
-    getBalance: async function(contract) {
+    async getBalance(contract) {
         const info = await this.requestWalletInfo();
         const address = info.address;
         const balance = await this.getBalanceRequest(address, contract);
@@ -88,7 +94,7 @@ export const XianWalletUtils = {
 
     async getTxResults(txHash) {
         try {
-            const response = await fetch(`https://testnet.xian.org/tx?hash=0x${txHash}`);
+            const response = await fetch(`${this.rpcUrl}/tx?hash=0x${txHash}`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
