@@ -1,17 +1,15 @@
 export const XianWalletUtils = {
     rpcUrl: 'https://testnet.xian.org', // Default RPC URL
+    walletInfoResolver: null, // Define walletInfoResolver
 
     // Initialize listeners to resolve promises and set RPC URL
-    init(rpcUrl) {
+    init(rpcUrl = this.rpcUrl) { //Default argument when nothing is passed
         if (rpcUrl) {
             this.rpcUrl = rpcUrl;
         }
 
         document.addEventListener('xianWalletInfo', event => {
-            if (this.walletInfoResolver) {
-                this.walletInfoResolver(event.detail);
-                this.walletInfoResolver = null; // Reset the resolver after use
-            }
+            this.walletInfoResolver = event.detail;
         });
 
         document.addEventListener('xianWalletTxStatus', event => {
@@ -38,22 +36,17 @@ export const XianWalletUtils = {
     // Request wallet information and return a promise that resolves with the info
     requestWalletInfo() {
         return new Promise((resolve, reject) => {
-            this.walletInfoResolver = resolve; // Store the resolver to use in the event listener
-
-            // Set a timeout to reject the promise if it does not resolve within a certain timeframe
-            const timeoutId = setTimeout(() => {
-                this.walletInfoResolver = null; // Clear the resolver
-                reject(new Error('Xian Wallet Chrome extension not installed or not responding'));
-            }, 2000); // 2 seconds timeout
+            setTimeout(() => {
+                if (this.walletInfoResolver === null){
+                    reject(new Error('Xian Wallet Chrome extension not installed or not responding'));
+                    return;
+                }
+                resolve(this.walletInfoResolver);
+            }, 1200);
 
             // Dispatch the event to request wallet info
             document.dispatchEvent(new CustomEvent('xianWalletGetInfo'));
-         
-            // Wrap the original resolve to clear the timeout when resolved
-            this.walletInfoResolver = (info) => {
-                clearTimeout(timeoutId);
-                resolve(info);
-            };
+            
         });
     },
 
