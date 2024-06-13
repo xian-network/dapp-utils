@@ -1,8 +1,9 @@
 export const XianWalletUtils = {
     rpcUrl: 'https://testnet.xian.org', // Default RPC URL
+    isWalletReady: false,
 
     // Initialize listeners to resolve promises and set RPC URL
-    init(rpcUrl) {
+    init: function(rpcUrl) {
         if (rpcUrl) {
             this.rpcUrl = rpcUrl;
         }
@@ -33,10 +34,31 @@ export const XianWalletUtils = {
                 });
             }
         });
+
+        document.addEventListener('xianReady', () => {
+            this.isWalletReady = true;
+            console.log('Xian Wallet is ready');
+        });
+
+        // Check if the wallet is already ready
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            this.isWalletReady = true;
+        }
+    },
+
+    waitForWalletReady: function() {
+        return new Promise(resolve => {
+            if (this.isWalletReady) {
+                resolve();
+            } else {
+                document.addEventListener('xianReady', resolve, { once: true });
+            }
+        });
     },
 
     // Request wallet information and return a promise that resolves with the info
-    requestWalletInfo() {
+    requestWalletInfo: async function() {
+        await this.waitForWalletReady();
         return new Promise((resolve, reject) => {
             this.walletInfoResolver = resolve; // Store the resolver to use in the event listener
 
@@ -44,11 +66,11 @@ export const XianWalletUtils = {
             const timeoutId = setTimeout(() => {
                 this.walletInfoResolver = null; // Clear the resolver
                 reject(new Error('Xian Wallet Chrome extension not installed or not responding'));
-            }, 2000); // 2 seconds timeout
+            }, 5000); // 5 seconds timeout
 
             // Dispatch the event to request wallet info
             document.dispatchEvent(new CustomEvent('xianWalletGetInfo'));
-         
+
             // Wrap the original resolve to clear the timeout when resolved
             this.walletInfoResolver = (info) => {
                 clearTimeout(timeoutId);
@@ -58,7 +80,8 @@ export const XianWalletUtils = {
     },
 
     // Send a transaction with detailed parameters and return a promise that resolves with the transaction status
-    sendTransaction(contract, method, kwargs) {
+    sendTransaction: async function(contract, method, kwargs) {
+        await this.waitForWalletReady();
         return new Promise((resolve, reject) => {
             this.transactionResolver = resolve; // Store the resolver to use in the event listener
             document.dispatchEvent(new CustomEvent('xianWalletSendTx', {
@@ -68,31 +91,22 @@ export const XianWalletUtils = {
                     kwargs: kwargs
                 }
             }));
+
+            // Set a timeout to reject the promise if it does not resolve within a certain timeframe
+            const timeoutId = setTimeout(() => {
+                this.transactionResolver = null; // Clear the resolver
+                reject(new Error('Xian Wallet Chrome extension not responding'));
+            }, 2000); // 2 seconds timeout
+
+            // Wrap the original resolve to clear the timeout when resolved
+            this.transactionResolver = (txStatus) => {
+                clearTimeout(timeoutId);
+                resolve(txStatus);
+            };
         });
     },
 
-    async getBalanceRequest(address, contract) {
-        const response = await fetch(`${this.rpcUrl}/abci_query?path=%22/get/${contract}.balances:${address}%22`);
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        let balance = data.result.response.value;
-        if (balance === 'AA==') {
-            return 0;
-        }
-        let decodedBalance = window.atob(balance);
-        return decodedBalance;
-    },
-
-    async getBalance(contract) {
-        const info = await this.requestWalletInfo();
-        const address = info.address;
-        const balance = await this.getBalanceRequest(address, contract);
-        return balance;
-    },
-
-    async getTxResults(txHash) {
+    getTxResults: async function(txHash) {
         try {
             const response = await fetch(`${this.rpcUrl}/tx?hash=0x${txHash}`);
             if (!response.ok) {
@@ -106,7 +120,28 @@ export const XianWalletUtils = {
         }
     },
 
-    async getTxResultsAsyncBackoff(txHash, retries = 5, delay = 1000) {
+    getBalanceRequest: async function(address, contract) {
+        const response = await fetch(`${this.rpcUrl}/abci_query?path=%22/get/${contract}.balances:${address}%22`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        let balance = data.result.response.value;
+        if (balance === 'AA==') {
+            return 0;
+        }
+        let decodedBalance = window.atob(balance);
+        return decodedBalance;
+    },
+
+    getBalance: async function(contract) {
+        const info = await this.requestWalletInfo();
+        const address = info.address;
+        const balance = await this.getBalanceRequest(address, contract);
+        return balance;
+    },
+
+    getTxResultsAsyncBackoff: async function(txHash, retries = 5, delay = 1000) {
         try {
             return await this.getTxResults(txHash);
         } catch (error) {
