@@ -39,11 +39,6 @@ export const XianWalletUtils = {
             this.isWalletReady = true;
             console.log('Xian Wallet is ready');
         });
-
-        // Check if the wallet is already ready
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            this.isWalletReady = true;
-        }
     },
 
     waitForWalletReady: function() {
