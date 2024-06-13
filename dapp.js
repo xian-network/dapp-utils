@@ -43,6 +43,7 @@ const XianWalletUtils = {
         // Check if the document was previously loaded complete
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
             this.isWalletReady = true;
+            console.log('Xian Wallet is ready');
         }
        
     },
