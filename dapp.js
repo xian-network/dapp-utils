@@ -97,7 +97,7 @@ const XianWalletUtils = {
             const timeoutId = setTimeout(() => {
                 this.transactionResolver = null; // Clear the resolver
                 reject(new Error('Xian Wallet Chrome extension not responding'));
-            }, 2000); // 2 seconds timeout
+            }, 30000); // 30 seconds timeout, this requires manual confirmation
 
             // Wrap the original resolve to clear the timeout when resolved
             this.transactionResolver = (txStatus) => {
