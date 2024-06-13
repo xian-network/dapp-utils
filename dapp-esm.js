@@ -42,8 +42,7 @@ export const XianWalletUtils = {
 
         // Check if the document was previously loaded complete
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            this.isWalletReady = true;
-            console.log('Xian Wallet is ready');
+            this.isWalletReady = true; // This is on purpose and does not mean the wallet is installed, but this is used when the script is imported while the site is already loaded.
         }
     },
 
@@ -67,7 +66,7 @@ export const XianWalletUtils = {
             const timeoutId = setTimeout(() => {
                 this.walletInfoResolver = null; // Clear the resolver
                 reject(new Error('Xian Wallet Chrome extension not installed or not responding'));
-            }, 5000); // 5 seconds timeout
+            }, 2000); // 2 seconds timeout
 
             // Dispatch the event to request wallet info
             document.dispatchEvent(new CustomEvent('xianWalletGetInfo'));
