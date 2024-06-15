@@ -58,6 +58,18 @@ XianWalletUtils.getBalance("currency")
     });
 ```
 
+To get the amount of approved tokens that a wallet has approved for another contract/address to spend, you can use `getApprovedBalance` function with the contract of the token that you want to get approved amount of and the address/contract the approval is meant for. This function returns a promise that resolves with the amount.
+
+```javascript
+XianWalletUtils.getApprovedBalance("currency", "con_multisend")
+    .then(amount => {
+        console.log('Approved Amount:', amount);
+    })
+    .catch(error => {
+        console.error(error);
+    });
+```
+
 ### Sending Transactions
 
 To send a transaction with detailed control over the transaction parameters, use the `sendTransaction` function. This function requires specifying the contract name, method name, kwargs. It returns a promise that resolves with the transaction result.
