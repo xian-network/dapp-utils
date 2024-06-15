@@ -141,6 +141,27 @@ export const XianWalletUtils = {
         return balance;
     },
 
+    getApprovedBalanceRequest: async function(token_contract, address, approved_to) {
+        const response = await fetch(`${this.rpcUrl}/abci_query?path=%22/get/${token_contract}.balances:${address}:${approved_to}%22`);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        let balance = data.result.response.value;
+        if (balance === 'AA==') {
+            return 0;
+        }
+        let decodedBalance = window.atob(balance);
+        return decodedBalance;
+    },
+
+    getApprovedBalance: async function(token_contract, approved_to) {
+        const info = await this.requestWalletInfo();
+        const address = info.address;
+        const balance = await this.getApprovedBalanceRequest(token_contract, address, approved_to);
+        return balance;
+    },
+
     getTxResultsAsyncBackoff: async function(txHash, retries = 5, delay = 1000) {
         try {
             return await this.getTxResults(txHash);
