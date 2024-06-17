@@ -1,6 +1,7 @@
 const XianWalletUtils = {
     rpcUrl: 'https://testnet.xian.org', // Default RPC URL
     isWalletReady: false,
+    walletReadyResolver: null,
 
     // Initialize listeners to resolve promises and set RPC URL
     init: function(rpcUrl) {
@@ -37,14 +38,12 @@ const XianWalletUtils = {
 
         document.addEventListener('xianReady', () => {
             this.isWalletReady = true;
+            if (this.walletReadyResolver) {
+                this.walletReadyResolver();
+                this.walletReadyResolver = null; // Reset the resolver after use
+            }
             console.log('Xian Wallet is ready');
         });
-
-        // Check if the document was previously loaded complete
-        if (document.readyState === 'complete' || document.readyState === 'interactive') {
-            this.isWalletReady = true; // This is on purpose and does not mean the wallet is installed, but this is used when the script is imported while the site is already loaded.
-        }
-       
     },
 
     waitForWalletReady: function() {
@@ -52,7 +51,13 @@ const XianWalletUtils = {
             if (this.isWalletReady) {
                 resolve();
             } else {
-                document.addEventListener('xianReady', resolve, { once: true });
+                this.walletReadyResolver = resolve;
+                setTimeout(() => {
+                    if (!this.isWalletReady) {
+                        this.walletReadyResolver = null; // Clear the resolver
+                        resolve(); // Resolve anyway to not block the flow
+                    }
+                }, 2000); // 2 seconds timeout
             }
         });
     },
