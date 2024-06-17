@@ -181,4 +181,4 @@ const XianWalletUtils = {
     }
 };
 
-export default XianWalletUtils
+export default XianWalletUtils;
