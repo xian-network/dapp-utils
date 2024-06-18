@@ -3,6 +3,17 @@ const XianWalletUtils = {
     isWalletReady: false,
     walletReadyResolver: null,
 
+    hexToString: function(hex) {
+        // Convert hex string to bytes
+        let bytes = [];
+        for (let i = 0; i < hex.length; i += 2) {
+            bytes.push(parseInt(hex.substr(i, 2), 16));
+        }
+
+        // Convert bytes to string
+        return String.fromCharCode.apply(String, bytes);
+    },
+
     // Initialize listeners to resolve promises and set RPC URL
     init: function(rpcUrl) {
         if (rpcUrl) {
@@ -25,8 +36,11 @@ const XianWalletUtils = {
                 }
                 this.getTxResultsAsyncBackoff(event.detail.txid).then(tx => {
                     let data = tx.result.tx_result.data;
+                    let original_tx = tx.result.tx
                     let decodedData = window.atob(data);
+                    let decodedOriginalTx = window.atob(original_tx);
                     let parsedData = JSON.parse(decodedData);
+                    parsedData.original_tx = JSON.parse(this.hexToString(decodedOriginalTx));
                     this.transactionResolver(parsedData);
                     this.transactionResolver = null; // Reset the resolver after use
                 }).catch(error => {
