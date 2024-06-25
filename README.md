@@ -91,7 +91,7 @@ XianWalletUtils.sendTransaction(
 });
 ```
 
-### Sign Msg
+### Sign Message
 
 To request a wallet to sign a message, you can use the `signMessage` function. This function returns a promise that resolves with the signed msg.
 
