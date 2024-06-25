@@ -93,7 +93,7 @@ XianWalletUtils.sendTransaction(
 
 ### Sign Message
 
-To request a wallet to sign a message, you can use the `signMessage` function. This function returns a promise that resolves with the signed msg.
+To request a wallet to sign a message, you can use the `signMessage` function. This function returns a promise that resolves with the signed msg. (only works with strings, JSON, objects wont work)
 
 ```javascript
 XianWalletUtils.signMessage("message")
