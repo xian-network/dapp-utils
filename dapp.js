@@ -27,6 +27,13 @@ const XianWalletUtils = {
             }
         });
 
+        document.addEventListener('xianWalletSignMsg', event => {
+            if (this.signMsgResolver) {
+                this.signMsgResolver(event.detail);
+                this.signMsgResolver = null; // Reset the resolver after use
+            }
+        });
+
         document.addEventListener('xianWalletTxStatus', event => {
             if (this.transactionResolver) {
                 if ('errors' in event.detail) {
@@ -96,6 +103,17 @@ const XianWalletUtils = {
                 clearTimeout(timeoutId);
                 resolve(info);
             };
+        });
+    },
+
+    // Sign a message and return a promise that resolves with the signature
+    signMessage: async function(message) {
+        await this.waitForWalletReady();
+        return new Promise((resolve, reject) => {
+            this.signMsgResolver = resolve; // Store the resolver to use in the event listener
+            document.dispatchEvent(new CustomEvent('xianWalletSignMsg', {
+                detail: message
+            }));
         });
     },
 
