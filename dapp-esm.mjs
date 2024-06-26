@@ -116,6 +116,32 @@ const XianWalletUtils = {
         return this.walletInfoReq;
     },
 
+    // Sign a message and return a promise that resolves with the signature
+    signMessage: async function(message) {
+        await this.waitForWalletReady();
+        return new Promise((resolve, reject) => {
+            this.signMsgResolver = resolve; // Store the resolver to use in the event listener
+
+            // Set a timeout to reject the promise if it does not resolve within a certain timeframe
+            const timeoutId = setTimeout(() => {
+                this.signMsgResolver = null; // Clear the resolver
+                reject(new Error('Xian Wallet Chrome extension not responding'));
+            }, 30000); // 30 seconds timeout, this requires manual confirmation
+            
+            document.dispatchEvent(new CustomEvent('xianWalletSignMsg', {
+                detail: {
+                    message: message
+                }
+            }));
+
+            // Wrap the original resolve to clear the timeout when resolved
+            this.signMsgResolver = (signature) => {
+                clearTimeout(timeoutId);
+                resolve(signature);
+            };
+        });
+    },
+
     // Send a transaction with detailed parameters and return a promise that resolves with the transaction status
     sendTransaction: async function (contract, method, kwargs) {
         await this.waitForWalletReady();
