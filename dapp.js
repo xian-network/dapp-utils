@@ -116,8 +116,6 @@ const XianWalletUtils = {
         return this.walletInfoReq;
     },
 
-
-
     // Sign a message and return a promise that resolves with the signature
     signMessage: async function(message) {
         await this.waitForWalletReady();
