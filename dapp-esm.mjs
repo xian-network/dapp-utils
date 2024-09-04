@@ -139,7 +139,7 @@ const XianWalletUtils = {
         });
     },
 
-    sendTransaction: async function(contract, method, kwargs) {
+    sendTransaction: async function(contract, method, kwargs, stampLimit=0) {
         await this.waitForWalletReady();
         return new Promise((resolve, reject) => {
             this.state.transaction.requests.push(resolve);
@@ -152,12 +152,19 @@ const XianWalletUtils = {
                 }
             }, 30000); // 30 seconds timeout, this requires manual confirmation
 
+            let eventDetail = {
+                contract: contract,
+                method: method,
+                kwargs: kwargs
+            };
+    
+            
+            if (stampLimit > 0) {
+                eventDetail.stampLimit = stampLimit;
+            }
+    
             document.dispatchEvent(new CustomEvent('xianWalletSendTx', {
-                detail: {
-                    contract: contract,
-                    method: method,
-                    kwargs: kwargs
-                }
+                detail: eventDetail
             }));
         });
     },
