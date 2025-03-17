@@ -1,0 +1,19 @@
+{
+    "name": "xian-wallet-utils",
+    "version": "1.0.0",
+    "description": "A utility library for interacting with the Xian blockchain wallet.",
+    "main": "dapp.js",
+    "module": "dapp-esm.mjs",
+    "type": "module",
+    "scripts": {
+      "build": "echo 'No build step defined.'",
+      "test": "echo 'No tests defined.'"
+    },
+    "keywords": ["xian", "wallet", "blockchain", "dapp"],
+    "author": "crosschainer",
+    "license": "MIT",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/xian-network/dapp-utils.git"
+    }
+  }

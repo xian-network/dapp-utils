@@ -13,6 +13,9 @@ const XianWalletUtils = {
         signMessage: {
             requests: [],
         },
+        addToken: {
+            requests: [],
+        },
         transaction: {
             requests: [],
         },
@@ -42,6 +45,14 @@ const XianWalletUtils = {
             // Resolve pending sign message requests
             if (this.state.signMessage.requests.length > 0) {
                 const resolver = this.state.signMessage.requests.shift();
+                resolver(event.detail);
+            }
+        });
+
+        document.addEventListener('xianWalletAddTokenResponse', event => {
+            // Resolve pending add token requests
+            if (this.state.addToken.requests.length > 0) {
+                const resolver = this.state.addToken.requests.shift();
                 resolver(event.detail);
             }
         });
@@ -115,6 +126,27 @@ const XianWalletUtils = {
             }, 2000); // 2 seconds timeout
 
             document.dispatchEvent(new CustomEvent('xianWalletGetInfo'));
+        });
+    },
+
+    addToken: async function(contract) {
+        await this.waitForWalletReady();
+        return new Promise((resolve, reject) => {
+            this.state.addToken.requests.push(resolve);
+
+            const timeoutId = setTimeout(() => {
+                const index = this.state.addToken.requests.indexOf(resolve);
+                if (index !== -1) {
+                    this.state.addToken.requests.splice(index, 1);
+                    reject(new Error('Xian Wallet Chrome extension not responding'));
+                }
+            }, 30000); // 30 seconds timeout, this requires manual confirmation
+            
+            document.dispatchEvent(new CustomEvent('xianWalletAddToken', {
+                detail: {
+                    contract: contract
+                }
+            }));
         });
     },
 
