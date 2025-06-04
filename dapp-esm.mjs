@@ -70,7 +70,9 @@ const XianWalletUtils = {
                         let decodedData = window.atob(data);
                         let decodedOriginalTx = window.atob(original_tx);
                         let parsedData = JSON.parse(decodedData);
-                        parsedData.original_tx = JSON.parse(this.hexToString(decodedOriginalTx));
+                        if (typeof decodedOriginalTx !== "string"){
+                            parsedData.original_tx = JSON.parse(this.hexToString(decodedOriginalTx));
+                        }
                         resolver(parsedData);
                     }).catch(error => {
                         console.error('Final error after retries:', error);
