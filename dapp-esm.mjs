@@ -272,7 +272,8 @@ const XianWalletUtils = {
     hexToString: function(hex) {
         let bytes = [];
         for (let i = 0; i < hex.length; i += 2) {
-            bytes.push(parseInt(hex.substring(i, 2), 16));
+            // Correctly extract two characters (one byte) from the hex string
+            bytes.push(parseInt(hex.substring(i, i + 2), 16));
         }
         return String.fromCharCode.apply(String, bytes);
     },
