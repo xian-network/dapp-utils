@@ -38,6 +38,7 @@ To request wallet information, you can use the `requestWalletInfo` function. Thi
 XianWalletUtils.requestWalletInfo()
     .then(info => {
         console.log('Wallet Address:', info.address);
+        console.log('Truncated Wallet Address:', info.truncatedAddress);
         console.log('Is Locked:', info.locked);
         console.log('Chain ID:', info.chainId);
     })

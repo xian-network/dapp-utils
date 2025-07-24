@@ -37,7 +37,13 @@ const XianWalletUtils = {
             // Resolve pending wallet info requests
             if (this.state.walletInfo.requests.length > 0) {
                 const resolver = this.state.walletInfo.requests.shift();
-                resolver(event.detail);
+                const walletInfo = event.detail;
+                // Check if the data and address exist before trying to truncate
+                if (walletInfo && walletInfo.address) {
+                    // Add a new property to the object with the truncated address
+                    walletInfo.truncatedAddress = this.truncateAddress(walletInfo.address);
+                }
+                resolver(walletInfo);
             }
         });
 
@@ -272,9 +278,20 @@ const XianWalletUtils = {
     hexToString: function(hex) {
         let bytes = [];
         for (let i = 0; i < hex.length; i += 2) {
-            bytes.push(parseInt(hex.substring(i, 2), 16));
+            // Correctly extract two characters (one byte) from the hex string
+            bytes.push(parseInt(hex.substring(i, i + 2), 16));
         }
         return String.fromCharCode.apply(String, bytes);
     },
+
+    truncateAddress: function(address, startChars = 6, endChars = 4) {
+        if (!address || typeof address !== 'string' || address.length < startChars + endChars) {
+            // Return original if it's not a string or too short to truncate
+            return address;
+        }
+        const start = address.substring(0, startChars);
+        const end = address.substring(address.length - endChars);
+        return `${start}...${end}`;
+    }
 };
 export default XianWalletUtils;
